@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define rep(i, a, b) for(int i = a; i < (b); ++i)
+#define trav(a, x) for(auto& a : x)
+#define all(x) x.begin(), x.end()
+#define sz(x) (int)(x).size()
+#define F first
+#define S second
+#define f_in freopen("test.in","r",stdin);
+#define f_out freopen("test.in","w",stdout);
+#define debug(x) cerr << #x << " : " << x << "\n";
+#define _ cin.sync_with_stdio(0); cin.tie(0);
+
+inline char nc(){
+    static char buf[100000],*p1=buf,*p2=buf;
+    return p1==p2&&(p2=(p1=buf)+fread(buf,1,100000,stdin),p1==p2)?EOF:*p1++;
+}
+
+template<typename T = int>
+inline T nxt(){
+    char c=nc();T x=0; int f=1;
+    for(;c>'9'||c<'0';c=nc())if(c=='-')f=-1;
+    for(;c>='0'&&c<='9';x=x*10+c-'0',c=nc());
+    x*=f;
+    return x;
+}
+
+typedef long long ll;
+typedef pair<int, int> pii;
+typedef vector<int> vi;
+typedef vector<ll> vl;
+
+const int inf = (int)1e9 + 123;
+const int N = 100123;
+int n;
+pii a[N], hull[N];
+
+ll cross(pii x, pii y){
+    return 1LL * x.F * y.S - 1LL * x.S * y.F;
+}
+
+pii operator-(const pii &x, const pii &y){
+    return {x.F - y.F, x.S - y.S};
+}
+
+
+int convex_hull(){
+    sort(a, a + n);
+    int h = 0;
+    for(int i=0;i<n;++i){
+        while(h >= 2 && cross(a[i] - hull[h - 1], hull[h - 1] - hull[h - 2]) > 0) --h;
+        hull[h++] = a[i];
+    }
+    for(int i=n-2,t=h;i>=0;--i){
+        while(h >= t && cross(a[i] - hull[h - 1], hull[h - 1] - hull[h - 2]) > 0) --h;
+        hull[h++] = a[i];
+    }
+    return h - 1;
+}
+
+int main(){
+#ifdef LOCAL_DEFINE
+    f_in
+#else
+    _
+#endif
+    int t;
+    cin >> t;
+    while(t--){
+        int m;
+        n = 0;
+        cin >> m;
+        rep(i,0,m){
+            char c;
+            cin >> a[n].F >> a[n].S >> c;
+            if(c == 'Y') n++;
+        }
+        int h = convex_hull();
+        cout << h << '\n';
+        rep(i,0,h) cout << hull[i].F << ' ' << hull[i].S << '\n';
+    }
+
+#ifdef LOCAL_DEFINE
+    cout <<"\nTime elapsed: "<<(1000 * clock() / CLOCKS_PER_SEC)<<"ms\n";
+ #endif
+}
